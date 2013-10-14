@@ -75,6 +75,21 @@ bool IsAnnagram2(std::string& str1, std::string& str2)
 	return freq1 == freq2;
 }
 
+#define _AFX_SECURE_NO_WARNINGS
+void ReplaceSpaces1(char* pStr, int nSize)
+{
+	std::string str(pStr, pStr + nSize);
+
+	nPos = str.find("%20");
+	while (nPos != str.end())
+	{
+		str.replace(nPos, 1, "%20");
+		nPos = str.find("%20");
+	}
+	str.copy(pStr, nSize - 1);
+	pStr[nSize - 1] = '\0';
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// 1.1
@@ -105,6 +120,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	cstr3 = "wQeete";
 	assert(IsAnnagram2(cstr1, cstr2) == true);
 	assert(IsAnnagram2(cstr1, cstr3) == false);
+
+	char* pStr = new char[100];
+	strcpy(pStr, "  34 678 ");
+	ReplaceSpaces1(pStr, 100);
+	assert(strcmp(pStr, "%20%2034%20678%20") == 0);
 
 	return 0;
 }
