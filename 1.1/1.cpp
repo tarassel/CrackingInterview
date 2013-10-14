@@ -80,11 +80,11 @@ void ReplaceSpaces1(char* pStr, int nSize)
 {
 	std::string str(pStr, pStr + nSize);
 
-	nPos = str.find("%20");
-	while (nPos != str.end())
+	std::string::size_type nPos = str.find(" ");
+	while (nPos != std::string::npos)
 	{
 		str.replace(nPos, 1, "%20");
-		nPos = str.find("%20");
+		nPos = str.find(" ");
 	}
 	str.copy(pStr, nSize - 1);
 	pStr[nSize - 1] = '\0';
