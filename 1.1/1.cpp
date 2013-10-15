@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <map>
 #include <functional>
+#include <vector>
 
 bool IsThereDuplicates(char* str, int nLen)
 {
@@ -75,7 +76,8 @@ bool IsAnnagram2(std::string& str1, std::string& str2)
 	return freq1 == freq2;
 }
 
-#define _AFX_SECURE_NO_WARNINGS
+//#define _AFX_SECURE_NO_WARNINGS
+// nSize is buffer size
 void ReplaceSpaces1(char* pStr, int nSize)
 {
 	std::string str(pStr, pStr + nSize);
@@ -88,6 +90,60 @@ void ReplaceSpaces1(char* pStr, int nSize)
 	}
 	str.copy(pStr, nSize - 1);
 	pStr[nSize - 1] = '\0';
+}
+
+// nSize is buffer size
+void ReplaceSpaces2(char* pStr, int nSize)
+{
+//	char* pStrTmp = new char[nSize];
+	std::unique_ptr<char> pStrTmp(new char[nSize]);
+	char* pPos = pStrTmp.get();
+
+	for (int i=0; i<nSize && (pStr[i] != '\0'); i++)
+	{
+		if (pStr[i] == ' ')
+		{
+			memcpy(pPos, "%20", 3);
+			pPos +=3;
+		}
+		else
+		{
+			*pPos = pStr[i];
+			++pPos;
+		}
+	}
+	*pPos = '\0';
+
+	memcpy(pStr, pStrTmp.get(), pPos-pStrTmp.get());
+
+//	delete[] pStrTmp;
+}
+
+// nSize is string size excl zero
+void ReplaceSpaces3(char* pStr, int nSize)
+{
+	int nSpaceCount = 0, nNewSize = 0;
+	for (int i=0; i<nSize; ++i)
+		if (pStr[i] == ' ')
+			++nSpaceCount;
+	nNewSize = nSize + nSpaceCount * 2;
+
+	pStr[nNewSize] = '\0';
+	for (int i=nSize-1; i>=0; --i)
+	{
+		if (pStr[i] == ' ')
+		{
+			pStr[nNewSize - 1] = '0';
+			pStr[nNewSize - 2] = '2';
+			pStr[nNewSize - 3] = '%';
+			nNewSize -= 3;
+		}
+		else
+		{
+			pStr[nNewSize - 1] = pStr[i];
+			nNewSize -= 1;
+		}
+	}
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -124,6 +180,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	char* pStr = new char[100];
 	strcpy(pStr, "  34 678 ");
 	ReplaceSpaces1(pStr, 100);
+	assert(strcmp(pStr, "%20%2034%20678%20") == 0);
+	strcpy(pStr, "  34 678 ");
+	ReplaceSpaces2(pStr, 100);
+	assert(strcmp(pStr, "%20%2034%20678%20") == 0);
+	strcpy(pStr, "  34 678 ");
+	ReplaceSpaces3(pStr, 9);
 	assert(strcmp(pStr, "%20%2034%20678%20") == 0);
 
 	return 0;
