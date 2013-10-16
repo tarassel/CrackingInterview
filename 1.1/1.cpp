@@ -9,6 +9,7 @@
 #include <map>
 #include <functional>
 #include <vector>
+#include <sstream>
 
 bool IsThereDuplicates(char* str, int nLen)
 {
@@ -146,6 +147,39 @@ void ReplaceSpaces3(char* pStr, int nSize)
 	}
 }
 
+std::string Compress(std::string& str)
+{
+	if (str.size() <= 0)
+		return str;
+
+	std::ostringstream res;
+//	std::string res;
+	char cCurrChar = str[0];
+	int nCount = 1;
+
+	for(int i=1; i<str.size(); ++i)
+	{
+		if (cCurrChar == str[i])
+			++nCount;
+		else
+		{
+			res << cCurrChar << nCount;
+// 			res.push_back(cCurrChar);
+// 			res.push_back(std::to_string(i));
+			cCurrChar = str[i];
+			nCount = 1;
+		}
+	}
+
+	res << cCurrChar << nCount;
+
+	res.seekp(0, std::ios::end);
+	if (str.size() < res.tellp())
+		return str;
+	else
+		return res.str();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// 1.1
@@ -187,6 +221,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	strcpy(pStr, "  34 678 ");
 	ReplaceSpaces3(pStr, 9);
 	assert(strcmp(pStr, "%20%2034%20678%20") == 0);
+
+	assert(Compress(std::string("aabcccccaaa")) == "a2b1c5a3");
 
 	return 0;
 }
