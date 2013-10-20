@@ -180,6 +180,60 @@ std::string Compress(std::string& str)
 		return res.str();
 }
 
+void Transpose(int** matrix, const int n)
+{
+	int tmp;
+
+	for (int i=0; i<n; ++i)
+		for (int j=i; j<n; ++j)
+		{
+			tmp = matrix[i][j];
+			matrix[i][j] = matrix[j][i];
+			matrix[j][i] = tmp;
+		}
+}
+
+void ReverseRows(int** matrix, const int n)
+{
+	int tmp;
+
+	for (int i=0; i<n; ++i)
+		for (int j=0; j<n/2; ++j)
+		{
+			tmp = matrix[i][j];
+			matrix[i][j] = matrix[i][n - j - 1];
+			matrix[i][n - j - 1] = tmp;
+		}
+}
+
+void PrintMatrix(int** matrix, const int n)
+{
+	printf("\n");
+	for (int i=0; i<n; ++i)
+	{
+		for (int j=0; j<n; ++j)
+			printf("%d ", matrix[i][j]);
+		printf("\n");
+	}
+	printf("\n");
+}
+
+void Rotare(int** matrix, int n)
+{
+	printf("Input:\n");
+	PrintMatrix(matrix, n);
+
+	Transpose(matrix, n);
+
+	printf("Transposed:\n");
+	PrintMatrix(matrix, n);
+
+	ReverseRows(matrix, n);
+
+	printf("Out:\n");
+	PrintMatrix(matrix, n);
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// 1.1
@@ -223,6 +277,22 @@ int _tmain(int argc, _TCHAR* argv[])
 	assert(strcmp(pStr, "%20%2034%20678%20") == 0);
 
 	assert(Compress(std::string("aabcccccaaa")) == "a2b1c5a3");
+
+	const int cnSize = 4;
+	int matrix[cnSize][cnSize] = {
+		{1,2,3,4},
+		{5,6,7,8},
+		{9,10,11,12},
+		{13,14,15,16}
+	};
+	int** pMatrix = new int*[cnSize];
+	for (int i=0; i<cnSize; ++i)
+		pMatrix[i] = new int[cnSize];
+	for (int i=0; i<cnSize; ++i)
+		for (int j=0; j<cnSize; ++j)
+			pMatrix[i][j] = matrix[i][j];
+
+	Rotare(pMatrix, cnSize);
 
 	return 0;
 }
