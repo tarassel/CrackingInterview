@@ -159,7 +159,7 @@ std::string Compress(std::string& str)
 	char cCurrChar = str[0];
 	int nCount = 1;
 
-	for(int i=1; i<str.size(); ++i)
+	for(std::string::size_type i=1; i<str.size(); ++i)
 	{
 		if (cCurrChar == str[i])
 			++nCount;
@@ -236,7 +236,7 @@ void Rotare(int** matrix, int n)
 	PrintMatrix(matrix, n, n);
 }
 
-class MakeNulls
+/*class MakeNulls
 {
 public:
 	enum RowCol{
@@ -244,15 +244,21 @@ public:
 		col
 	};
 
-	MakeNulls(int** matrix, RowCol rowcol)
-		: _matrix(matrix), _rowcol(rowcol) {}
+	MakeNulls(int** matrix, RowCol rowcol, int len)
+		: _matrix(matrix), _rowcol(rowcol), _len(len) {}
 	void operator() (int elem)
 	{
+		for (int i=0; i<_len; ++i)
+			if (_rowcol == row)
+				_matrix[elem][i] = 0;
+			else
+				_matrix[i][elem] = 0;
 	}
 private:
 	int** _matrix;
 	RowCol _rowcol;
-};
+	int _len;
+};*/
 
 void SetZeros(int** matrix, int x, int y)
 {
@@ -266,12 +272,21 @@ void SetZeros(int** matrix, int x, int y)
 				colsToNull.insert(j);
 			}
 
-	MakeNulls nullRows(matrix, MakeNulls::RowCol::row);
-	std::for_each(rowsToNull.begin(), rowsToNull.end(), nullRows);
-	MakeNulls nullCols(matrix, MakeNulls::RowCol::col);
-	std::for_each(rowsToNull.begin(), rowsToNull.end(), nullCols);
-//	for (int i=0; i<y; ++i)
-//	for (int j=0; j<x; ++j)
+// 	MakeNulls nullRows(matrix, MakeNulls::RowCol::row, x);
+// 	std::for_each(rowsToNull.begin(), rowsToNull.end(), nullRows);
+// 	MakeNulls nullCols(matrix, MakeNulls::RowCol::col, y);
+// 	std::for_each(colsToNull.begin(), colsToNull.end(), nullCols);
+
+	for (std::set<int>::const_iterator i=rowsToNull.begin(); i!=rowsToNull.end(); ++i)
+	{
+		for (int j=0; j<x; ++j)
+			matrix[*i][j] = 0;
+	}
+	for (std::set<int>::const_iterator i=colsToNull.begin(); i!=colsToNull.end(); ++i)
+	{
+		for (int j=0; j<y; ++j)
+			matrix[j][*i] = 0;
+	}
 }
 
 int _tmain(int argc, _TCHAR* argv[])
