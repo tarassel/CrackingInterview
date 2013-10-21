@@ -10,6 +10,8 @@
 #include <functional>
 #include <vector>
 #include <sstream>
+#include <memory>
+#include <set>
 
 bool IsThereDuplicates(char* str, int nLen)
 {
@@ -206,12 +208,12 @@ void ReverseRows(int** matrix, const int n)
 		}
 }
 
-void PrintMatrix(int** matrix, const int n)
+void PrintMatrix(int** matrix, const int x, const int y)
 {
 	printf("\n");
-	for (int i=0; i<n; ++i)
+	for (int i=0; i<y; ++i)
 	{
-		for (int j=0; j<n; ++j)
+		for (int j=0; j<x; ++j)
 			printf("%d ", matrix[i][j]);
 		printf("\n");
 	}
@@ -221,17 +223,55 @@ void PrintMatrix(int** matrix, const int n)
 void Rotare(int** matrix, int n)
 {
 	printf("Input:\n");
-	PrintMatrix(matrix, n);
+	PrintMatrix(matrix, n, n);
 
 	Transpose(matrix, n);
 
 	printf("Transposed:\n");
-	PrintMatrix(matrix, n);
+	PrintMatrix(matrix, n, n);
 
 	ReverseRows(matrix, n);
 
 	printf("Out:\n");
-	PrintMatrix(matrix, n);
+	PrintMatrix(matrix, n, n);
+}
+
+class MakeNulls
+{
+public:
+	enum RowCol{
+		row,
+		col
+	};
+
+	MakeNulls(int** matrix, RowCol rowcol)
+		: _matrix(matrix), _rowcol(rowcol) {}
+	void operator() (int elem)
+	{
+	}
+private:
+	int** _matrix;
+	RowCol _rowcol;
+};
+
+void SetZeros(int** matrix, int x, int y)
+{
+	std::set<int> rowsToNull, colsToNull;
+
+	for (int i=0; i<y; ++i)
+		for (int j=0; j<x; ++j)
+			if (matrix[i][j] == 0)
+			{
+				rowsToNull.insert(i);
+				colsToNull.insert(j);
+			}
+
+	MakeNulls nullRows(matrix, MakeNulls::RowCol::row);
+	std::for_each(rowsToNull.begin(), rowsToNull.end(), nullRows);
+	MakeNulls nullCols(matrix, MakeNulls::RowCol::col);
+	std::for_each(rowsToNull.begin(), rowsToNull.end(), nullCols);
+//	for (int i=0; i<y; ++i)
+//	for (int j=0; j<x; ++j)
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -293,6 +333,25 @@ int _tmain(int argc, _TCHAR* argv[])
 			pMatrix[i][j] = matrix[i][j];
 
 	Rotare(pMatrix, cnSize);
+
+	const int cnX = 4, cnY = 3;
+	int matrix1[cnY][cnX] = {
+		{1,2,3,0},
+		{5,6,7,8},
+		{9,0,1,2}
+	};
+	int** pMatrix1 = new int*[cnY];
+	for (int i=0; i<cnY; ++i)
+		pMatrix1[i] = new int[cnX];
+	for (int i=0; i<cnY; ++i)
+		for (int j=0; j<cnX; ++j)
+			pMatrix1[i][j] = matrix1[i][j];
+	printf("\nSetZeros IN:\n");
+	PrintMatrix(pMatrix1, cnX, cnY);
+	SetZeros(pMatrix1, cnX, cnY);
+	printf("SetZeros OUT:\n");
+	PrintMatrix(pMatrix1, cnX, cnY);
+
 
 	return 0;
 }
