@@ -289,6 +289,15 @@ void SetZeros(int** matrix, int x, int y)
 	}
 }
 
+bool IsRotation(std::string& s1, std::string& s2)
+{
+	s2 += s2;
+	if (s2.find(s1) == std::string::npos)
+		return false;
+	else
+		return true;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// 1.1
@@ -367,6 +376,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	printf("SetZeros OUT:\n");
 	PrintMatrix(pMatrix1, cnX, cnY);
 
+	std::string s1("waterbottle");
+	std::string s2("erbottlewat");
+	assert(IsRotation(s1, s2) == true);
 
 	return 0;
 }
