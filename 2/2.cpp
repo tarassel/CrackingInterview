@@ -8,6 +8,8 @@
 #include <iterator>
 #include <set>
 #include <map>
+#include <assert.h>
+#include <vector>
 
 void RemoveDups1(std::list<int>& l)
 {
@@ -89,6 +91,68 @@ void RemoveDups4(LListNode<T>& ll)
 	}
 }
 
+template <typename T>
+LListNode<T>* nthToLast(LListNode<T>* ll, int k)
+{
+	std::vector<LListNode<T>*> arr;
+
+	do
+	{
+		arr.push_back(ll);
+		ll = ll->_next;
+	}
+	while (ll);
+
+	if (static_cast<std::vector<LListNode<T>*>::size_type>(k) > arr.size())
+		return 0;
+	else
+		return arr[arr.size() - k];
+}
+
+template <typename T>
+LListNode<T>* nthToLast2(LListNode<T>* ll, int k)
+{
+	LListNode<T>* iter = ll;
+	std::vector<LListNode<T>*> arr;
+	int n = 1;
+
+	while (iter->_next)
+	{
+		n++;
+		iter = iter->_next;
+	}
+
+	if (k > n)
+		return 0;
+	else
+	{
+		for (int i=0; i<n-k; i++)
+			ll = ll->_next;
+		return ll;
+	}
+}
+
+template <typename T>
+LListNode<T>* nthToLast3(LListNode<T>* ll, int k)
+{
+	LListNode<T>* p1 = ll;
+	LListNode<T>* p2 = ll;
+
+	int i;
+	for (i = 0; i < k && p2; i++)
+		p2 = p2->_next;
+
+	if (!p2 && i < k)
+		return 0;
+
+	while(p2)
+	{
+		p2 = p2->_next;
+		p1 = p1->_next;
+	}
+
+	return p1;
+}
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int arr[] = {1,1,2,3,1};
@@ -105,9 +169,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	ll->AddToTail(new LListNode<int>(1));
 	ll->AddToTail(new LListNode<int>(2));
 	ll->AddToTail(new LListNode<int>(3));
+	ll->AddToTail(new LListNode<int>(4));
+	ll->AddToTail(new LListNode<int>(5));
 	ll->AddToTail(new LListNode<int>(1));
 	RemoveDups4<int>(*ll);
 
+	assert(nthToLast<int>(ll, 2)->_t == 4);
+	assert(nthToLast<int>(ll, 1)->_t == 5);
+	assert(nthToLast<int>(ll, 5)->_t == 1);
+	assert(nthToLast2<int>(ll, 2)->_t == 4);
+	assert(nthToLast2<int>(ll, 1)->_t == 5);
+	assert(nthToLast2<int>(ll, 5)->_t == 1);
+	assert(nthToLast3<int>(ll, 2)->_t == 4);
+	assert(nthToLast3<int>(ll, 1)->_t == 5);
+	assert(nthToLast3<int>(ll, 5)->_t == 1);
 	ll->RemoveAll();
 
 	return 0;
