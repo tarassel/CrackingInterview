@@ -167,6 +167,68 @@ void DeleteNode(LListNode<T>* node)
 	delete nextNode;
 }
 
+template <typename T>
+LListNode<T>* Patrition(LListNode<T>* node, int x)
+{
+	LListNode<T> *lesBeg = 0, *lesEnd = lesBeg, *bigBeg = 0, *bigEnd = bigBeg;
+	while (node)
+	{
+		if (node->_t < x)
+		{
+			if (!lesBeg)
+				lesBeg = lesEnd = node;
+			else
+				lesEnd = lesEnd->_next = node;
+		}
+		else
+		{
+			if (!bigBeg)
+				bigBeg = bigEnd = node;
+			else
+				bigEnd = bigEnd->_next = node;
+		}
+
+		node = node->_next;
+	}
+
+	lesEnd->_next = bigBeg;
+	bigEnd->_next = 0;
+
+	return lesBeg;
+}
+
+template <typename T>
+LListNode<T>* Patrition2(LListNode<T>* node, int x)
+{
+	LListNode<T> *lesBeg = 0, *bigBeg = 0;
+
+	while (node)
+	{
+		LListNode<T> *next = node->_next;
+		if (node->_t < x)
+		{
+			node->_next = lesBeg;
+			lesBeg = node;
+		}
+		else
+		{
+			node->_next = bigBeg;
+			bigBeg = node;
+		}
+
+		node = next;
+	}
+
+	if (!lesBeg)
+		return bigBeg;
+
+	LListNode<T> *head = lesBeg;
+	while (lesBeg->_next)
+		lesBeg = lesBeg->_next;
+	lesBeg->_next = bigBeg;
+
+	return head;
+}
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int arr[] = {1,1,2,3,1};
@@ -203,6 +265,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	DeleteNode(ll);
 
 	ll->RemoveAll();
+
+
+	ll = new LListNode<int>(1);
+	ll->AddToTail(new LListNode<int>(1));
+	ll->AddToTail(new LListNode<int>(2));
+	ll->AddToTail(new LListNode<int>(3));
+	ll->AddToTail(new LListNode<int>(4));
+	ll->AddToTail(new LListNode<int>(5));
+	ll->AddToTail(new LListNode<int>(1));
+	LListNode<int>* res = Patrition2(ll, 3);
 
 	return 0;
 }
