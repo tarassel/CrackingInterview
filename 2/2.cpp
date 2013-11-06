@@ -91,6 +91,7 @@ void RemoveDups4(LListNode<T>& ll)
 	}
 }
 
+// Bullshit
 template <typename T>
 LListNode<T>* nthToLast(LListNode<T>* ll, int k)
 {
@@ -153,6 +154,19 @@ LListNode<T>* nthToLast3(LListNode<T>* ll, int k)
 
 	return p1;
 }
+
+// Cannot delete last elem
+template <typename T>
+void DeleteNode(LListNode<T>* node)
+{
+	if (!node || !node->_next)
+		return;
+
+	LListNode<T>* nextNode = node->_next;
+	*node = *node->_next;
+	delete nextNode;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int arr[] = {1,1,2,3,1};
@@ -183,6 +197,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	assert(nthToLast3<int>(ll, 2)->_t == 4);
 	assert(nthToLast3<int>(ll, 1)->_t == 5);
 	assert(nthToLast3<int>(ll, 5)->_t == 1);
+
+	// Del middle and first el
+	DeleteNode(ll->_next);
+	DeleteNode(ll);
+
 	ll->RemoveAll();
 
 	return 0;
