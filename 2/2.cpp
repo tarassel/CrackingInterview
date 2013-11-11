@@ -229,6 +229,57 @@ LListNode<T>* Patrition2(LListNode<T>* node, int x)
 
 	return head;
 }
+
+template <typename T>
+LListNode<T>* AddListsReversed(LListNode<T>* l1, LListNode<T>* l2, bool bNewLevel = false)
+{
+	T nNewVal = 0;
+	LListNode<T>* l1next = NULL;
+	LListNode<T>* l2next = NULL;
+
+	if (!l1 && !l2)
+	{
+		if (bNewLevel)
+			nNewVal = 0;
+		else
+			return NULL;
+	}
+	else if (!l1 || !l2)
+	{
+		if (l2)
+		{
+			nNewVal = l2->_t;
+			l1next = NULL;
+			l2next = l2->_next;
+		}
+		else
+		{
+			nNewVal = l1->_t;
+			l1next = l1->_next;
+			l2next = NULL;
+		}
+	}
+	else
+	{
+		nNewVal = l1->_t + l2->_t;
+		l1next = l1->_next;
+		l2next = l2->_next;
+	}
+
+	if (bNewLevel)
+		++nNewVal;
+
+	LListNode<T>* pNewNode = new LListNode<T>(nNewVal % 10);
+	pNewNode->_next = AddListsReversed(l1next, l2next, nNewVal >= 10);
+
+	return pNewNode;
+}
+
+template <typename T>
+LListNode<T>* AddLists(LListNode<T>* l1, LListNode<T>* l2, bool bNewLevel = false)
+{
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int arr[] = {1,1,2,3,1};
@@ -275,6 +326,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	ll->AddToTail(new LListNode<int>(5));
 	ll->AddToTail(new LListNode<int>(1));
 	LListNode<int>* res = Patrition2(ll, 3);
+	ll->RemoveAll();
+
+	LListNode<int>* l1 = new LListNode<int>(7);
+	l1->AddToTail(new LListNode<int>(1));
+	l1->AddToTail(new LListNode<int>(6));
+	LListNode<int>* l2 = new LListNode<int>(5);
+	l2->AddToTail(new LListNode<int>(9));
+	l2->AddToTail(new LListNode<int>(2));
+
+	LListNode<int>* lres = AddListsReversed(l1, l2);
+	lres->RemoveAll();
+
+// 	LListNode<int>* lres1 = AddLists(l1, l2);
+// 	lres1->RemoveAll();
 
 	return 0;
 }
