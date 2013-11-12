@@ -276,8 +276,124 @@ LListNode<T>* AddListsReversed(LListNode<T>* l1, LListNode<T>* l2, bool bNewLeve
 }
 
 template <typename T>
+int MakeListsLenEqual(LListNode<T>** l1, LListNode<T>** l2)
+{
+	LListNode<T>* l = NULL;
+
+	int nLen1 = 0;
+	l = *l1;
+	while (l->_next)
+		++nLen1, l = l->_next;
+	
+	int nLen2 = 0;
+	l = *l2;
+	while (l->_next)
+		++nLen2, l = l->_next;
+
+	LListNode<T>* lstr = NULL;
+	LListNode<T>* lend = NULL;
+
+	if (nLen1 == nLen2)
+		return nLen1;
+	else if (nLen1 < nLen2)
+	{
+		for (int i=0; i<nLen2-nLen1; ++i)
+		{
+			if (!lstr)
+			{
+				lstr = new LListNode<T>(0);
+				lend = lstr;
+			}
+			else
+			{
+				lend->_next = new LListNode<T>(0);
+				lend = lend->_next;
+			}
+		}
+
+		lend->_next = *l1;
+		*l1 = lstr;
+		return nLen2;
+	}
+	else// if (nLen1 > nLen2)
+	{
+		for (int i=0; i<nLen1-nLen2; ++i)
+		{
+			if (!lstr)
+			{
+				lstr = new LListNode<T>(0);
+				lend = lstr;
+			}
+			else
+			{
+				lend->_next = new LListNode<T>(0);
+				lend = lend->_next;
+			}
+		}
+
+		lend->_next = *l2;
+		*l2 = lstr;
+		return nLen1;
+	}
+}
+
+template <typename T>
+T GetListItemVal(LListNode<T>* l, int nPos)
+{
+	while (nPos > 0)
+	{
+		l = l->_next;
+		--nPos;
+	}
+
+	return l->_t;
+}
+
+template <typename T>
+LListNode<T>* AddListsIntern(LListNode<T>* l1, LListNode<T>* l2, int nPos, bool bNewLevel = false)
+{
+	if (nPos < 0)
+	{
+		if (bNewLevel)
+			return new LListNode<T>(1);
+		else
+			return new LListNode<T>(0);
+	}
+
+	T nNewVal = GetListItemVal(l1, nPos) + GetListItemVal(l2, nPos);
+
+	if (bNewLevel)
+		++nNewVal;
+
+	if (nNewVal >= 10)
+		bNewLevel = true;
+	else
+		bNewLevel = false;
+
+	LListNode<T>* pNewEndNode = new LListNode<T>(nNewVal % 10);
+
+	LListNode<T>* pPrevNodes = NULL;
+	
+	--nPos;
+	if (nPos < 0 && bNewLevel)
+		pPrevNodes = new LListNode<T>(1);
+	else if (nPos < 0 && !bNewLevel)
+		pPrevNodes = pNewEndNode;
+	else
+	{
+		pPrevNodes = AddListsIntern(l1, l2, nPos, bNewLevel);
+		pPrevNodes->AddToTail(pNewEndNode);
+	}
+
+	return pPrevNodes;
+}
+
+template <typename T>
 LListNode<T>* AddLists(LListNode<T>* l1, LListNode<T>* l2, bool bNewLevel = false)
 {
+	int nLen = MakeListsLenEqual(&l1, &l2);
+
+	return AddListsIntern(l1, l2, nLen);
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -338,8 +454,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	LListNode<int>* lres = AddListsReversed(l1, l2);
 	lres->RemoveAll();
 
-// 	LListNode<int>* lres1 = AddLists(l1, l2);
-// 	lres1->RemoveAll();
+	l1 = new LListNode<int>(6);
+	l1->AddToTail(new LListNode<int>(1));
+	l1->AddToTail(new LListNode<int>(7));
+	l2 = new LListNode<int>(1);
+	l2->AddToTail(new LListNode<int>(2));
+	l2->AddToTail(new LListNode<int>(9));
+	l2->AddToTail(new LListNode<int>(5));
+ 	LListNode<int>* lres1 = AddLists(l1, l2);
+ 	lres1->RemoveAll();
 
 	return 0;
 }
