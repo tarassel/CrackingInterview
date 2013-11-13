@@ -56,7 +56,15 @@ class LListNode
 {
 public:
 	LListNode(const T& t): _t(t), _next(0) {}
-	void RemoveAll() { if (_next) delete _next; delete this; }
+	void RemoveAll()
+	{
+		if (_next) 
+		{
+			_next->RemoveAll();
+			_next = NULL;
+		}
+		delete this;
+	}
 	T _t;
 	LListNode<T>* _next;
 	void AddToTail(LListNode<T>* node)
@@ -396,6 +404,37 @@ LListNode<T>* AddLists(LListNode<T>* l1, LListNode<T>* l2, bool bNewLevel = fals
 	return AddListsIntern(l1, l2, nLen);
 }
 
+
+template <typename T>
+LListNode<T>* FindLoopBeginning(LListNode<T>* head)
+{
+	LListNode<T> *slow = head, *fast = head;
+
+	while (fast && fast->_next)
+	{
+		slow = slow->_next;
+		fast = fast->_next->_next;
+
+		if (slow == fast)
+			break;
+	}
+
+	if (!fast || !fast->_next)
+		return NULL;
+
+	LListNode<T>* collisionPoint = slow;
+	LListNode<T>* cycleRunner = collisionPoint->_next;
+
+	while (cycleRunner != head)
+	{
+		if (cycleRunner == collisionPoint)
+			head = head->_next;
+		cycleRunner = cycleRunner->_next;
+	}
+
+	return head;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int arr[] = {1,1,2,3,1};
@@ -463,6 +502,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	l2->AddToTail(new LListNode<int>(5));
  	LListNode<int>* lres1 = AddLists(l1, l2);
  	lres1->RemoveAll();
+
+	l1 = new LListNode<int>(1);
+	l1->AddToTail(new LListNode<int>(2));
+	l2 = new LListNode<int>(3);
+	l1->AddToTail(l2);
+	l1->AddToTail(new LListNode<int>(4));
+	l1->AddToTail(new LListNode<int>(5));
+	l1->AddToTail(l2);
+	FindLoopBeginning(l1);
+//	l1->RemoveAll();
 
 	return 0;
 }
