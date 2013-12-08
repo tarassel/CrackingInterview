@@ -10,6 +10,7 @@
 #include <map>
 #include <assert.h>
 #include <vector>
+#include <stack>
 
 void RemoveDups1(std::list<int>& l)
 {
@@ -435,6 +436,89 @@ LListNode<T>* FindLoopBeginning(LListNode<T>* head)
 	return head;
 }
 
+template <typename T>
+bool isPalindrome(LListNode<T>* head)
+{
+	if (!head)
+		return false;
+
+	return isPalindrome1(head) && isPalindrome2(head);
+}
+
+template <typename T>
+bool isPalindrome1(LListNode<T>* head)
+{
+	LListNode<T>* runner = head->_next;
+	LListNode<T>* newListPre = new LListNode<T>(head->_t);
+	LListNode<T>* newListHead = newListPre;
+	int listSize = 1;
+
+	while (runner)
+	{
+		newListHead = new LListNode<T>(runner->_t);
+		newListHead->_next = newListPre;
+		newListPre = newListHead;
+		runner = runner->_next;
+		++listSize;
+	}
+
+	listSize = listSize / 2;
+
+	while (listSize)
+	{
+		if (head->_t != newListHead->_t)
+			return false;
+		head = head->_next;
+		newListHead = newListHead->_next;
+		--listSize;
+	}
+
+	return true;
+}
+
+template <typename T>
+bool isPalindrome2(LListNode<T>* head)
+{
+	LListNode<T>* runner = head;
+	int listSize = 0;
+
+	// get size
+	while (runner)
+	{
+		++listSize;
+		runner = runner->_next;
+	}
+	bool listSizeEven = (listSize % 2 == 0);
+
+	listSize = listSize / 2;
+
+	// make stack
+	std::stack<T> stk;
+	runner = head;
+
+	while (listSize)
+	{
+		stk.push(runner->_t);
+		runner = runner->_next;
+		--listSize;
+	}
+
+	// step if not even
+	if (!listSizeEven)
+		runner = runner->_next;
+
+	// compare
+	while (runner)
+	{
+		if (runner->_t != stk.top())
+			return false;
+		stk.pop();
+		runner = runner->_next;
+	}
+
+	return true;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int arr[] = {1,1,2,3,1};
@@ -512,6 +596,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	l1->AddToTail(l2);
 	FindLoopBeginning(l1);
 //	l1->RemoveAll();
+
+	l1 = new LListNode<int>(1);
+	l1->AddToTail(new LListNode<int>(2));
+	l1->AddToTail(new LListNode<int>(3));
+	l1->AddToTail(new LListNode<int>(2));
+	l1->AddToTail(new LListNode<int>(1));
+	assert(isPalindrome(l1));
+	l1->AddToTail(new LListNode<int>(1));
+	assert(!isPalindrome(l1));
 
 	return 0;
 }
